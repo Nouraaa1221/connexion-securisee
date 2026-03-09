@@ -1,87 +1,85 @@
+const SecurityCore = (() => {
+    let attempts = 0;
+    const maxAttempts = 3;
 
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password + "SECURE_SALT_2024"); // Ajout d'un sel
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+    const checkStrength = (password) => {
+        let entropy = 0;
+        if (password.length >= 12) entropy += 25;
+        if (/[A-Z]/.test(password)) entropy += 25;
+        if (/[0-9]/.test(password)) entropy += 25;
+        if (/[^A-Za-z0-9]/.test(password)) entropy += 25;
+        
+        document.getElementById('len').className = password.length >= 12 ? 'valid' : 'invalid';
+        document.getElementById('spec').className = (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) ? 'valid' : 'invalid';
+        
+        return entropy;
+    };
 
-const form = document.getElementById("loginForm");
-const passInput = document.getElementById("password");
-const strengthBar = document.getElementById("strength-bar");
-const btn = document.getElementById("submitBtn");
-const message = document.getElementById("message");
+    const hashData = async (data) => {
+        const encoder = new TextEncoder();
+        const msgBuffer = encoder.encode(data + "S-CORE-SALT-2026");
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    };
 
+    const addLog = (msg) => {
+        const log = document.getElementById('system-logs');
+        log.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>` + log.innerHTML;
+    };
 
-passInput.addEventListener('input', () => {
-    const val = passInput.value;
-    let strength = 0;
-    if (val.length >= 8) strength += 25;
-    if (/[A-Z]/.test(val)) strength += 25;
-    if (/[0-9]/.test(val)) strength += 25;
-    if (/[^A-Za-z0-9]/.test(val)) strength += 25;
+    const triggerLockout = () => {
+        const screen = document.getElementById('lockout-screen');
+        const timerDisplay = document.getElementById('lockout-timer');
+        let sec = 30;
+        screen.classList.remove('hidden');
+        const itv = setInterval(() => {
+            sec--;
+            timerDisplay.textContent = `00:${sec.toString().padStart(2, '0')}`;
+            if (sec <= 0) {
+                clearInterval(itv);
+                screen.classList.add('hidden');
+                attempts = 0;
+            }
+        }, 1000);
+    };
 
-    strengthBar.style.width = strength + "%";
-    
-    if (strength <= 25) strengthBar.style.backgroundColor = "#ff4b5c";
-    else if (strength <= 50) strengthBar.style.backgroundColor = "#ffbd2e";
-    else if (strength <= 75) strengthBar.style.backgroundColor = "#3b82f6";
-    else strengthBar.style.backgroundColor = "#00ff9d";
-});
+    return {
+        init: () => {
+            const passInput = document.getElementById('password');
+            const bar = document.getElementById('strength-bar');
 
+            passInput.addEventListener('input', (e) => {
+                const score = checkStrength(e.target.value);
+                bar.style.width = score + "%";
+                bar.style.backgroundColor = score < 50 ? "#991b1b" : (score < 100 ? "#b45309" : "#166534");
+            });
 
-document.getElementById("togglePassword").addEventListener('click', function() {
-    const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passInput.setAttribute('type', type);
-});
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (checkStrength(passInput.value) < 75) {
+                    addLog("ÉCHEC : Politique de sécurité non satisfaite");
+                    return;
+                }
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    triggerLockout();
+                    return;
+                }
+                const h = await hashData(passInput.value);
+                addLog(`CHIFFREMENT RÉUSSI : ${h.substring(0, 16)}...`);
+                document.getElementById('step-1').classList.add('hidden');
+                document.getElementById('step-2').classList.remove('hidden');
+            });
 
+            document.getElementById('verifyMFA').addEventListener('click', () => {
+                addLog("VALIDATION MFA EN COURS...");
+                setTimeout(() => {
+                    alert("ACCÈS AUTORISÉ");
+                    location.reload();
+                }, 1000);
+            });
+        }
+    };
+})();
 
-let attempts = 0;
-
-form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    
-  
-    btn.disabled = true;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="loader"></span> ANALYSE EN COURS...';
-    message.textContent = "";
-
-    await new Promise(r => setTimeout(r, 1500)); // Simulation délai réseau
-
-    const password = passInput.value;
-    
-    if (password.length < 8) {
-        showError("ERREUR : Longueur minimale non respectée.");
-        resetBtn(originalText);
-        return;
-    }
-
-    attempts++;
-    if (attempts >= 3) {
-        showError("ALERTE : Tentatives excessives. Système verrouillé 30s.");
-        setTimeout(() => { attempts = 0; resetBtn(originalText); }, 30000);
-        return;
-    }
-
-    const hash = await hashPassword(password);
-    console.log("%c [SYSTEM] Hash généré: " + hash, "color: #00ff9d; font-weight: bold");
-    
-    message.style.color = "var(--primary)";
-    message.textContent = "ACCÈS AUTORISÉ. BIENVENUE AGENT.";
-    resetBtn(originalText);
-});
-
-function showError(txt) {
-    message.style.color = "var(--error)";
-    message.textContent = txt;
-}
-
-function resetBtn(oldText) {
-    btn.disabled = false;
-    btn.innerHTML = oldText;
-}
-
-
-document.getElementById('user-ip').textContent = `192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
-
+SecurityCore.init();
