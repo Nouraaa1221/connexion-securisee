@@ -1,121 +1,71 @@
 :root {
-    --primary: #00ff9d; /* Vert Cyber */
-    --bg-dark: #0a0b10;
-    --card-bg: #151921;
-    --text-main: #e0e6ed;
-    --error: #ff4b5c;
+    --accent: #2d5a27;
+    --dark: #0f172a;
+    --border: #e2e8f0;
+    --error: #991b1b;
 }
 
 body {
+    margin: 0; padding: 0;
+    background-color: #f8fafc;
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color: var(--dark);
+    display: flex; justify-content: center; align-items: center;
     height: 100vh;
-    margin: 0;
-    overflow: hidden;
 }
 
-
-.background-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: 
-        linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
-    background-size: 30px 30px;
-    z-index: -1;
-}
-
-.login-container {
+.auth-container {
     width: 380px;
-    background: var(--card-bg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    overflow: hidden;
-    animation: fadeIn 0.8s ease-out;
+    background: white;
+    padding: 40px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
 }
 
+header { text-align: center; margin-bottom: 30px; }
+.brand-logo { font-weight: 800; font-size: 24px; letter-spacing: -1px; margin-bottom: 5px; }
+.module-name { font-size: 10px; letter-spacing: 1px; color: #64748b; font-weight: 700; }
 
-.terminal-header {
-    background: #1c212c;
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.dot { height: 8px; width: 8px; border-radius: 50%; margin-right: 6px; }
-.red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
-.terminal-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6272a4; margin-left: 10px; }
-
-.content { padding: 40px 30px; }
-
-.logo { text-align: center; margin-bottom: 30px; }
-.logo h1 { font-weight: 700; letter-spacing: 2px; margin: 10px 0 0; }
-.logo h1 span { color: var(--primary); text-shadow: 0 0 10px rgba(0,255,157,0.5); }
-.subtitle { font-size: 12px; color: #6272a4; text-transform: uppercase; }
-
-.input-group { margin-bottom: 20px; }
-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #94a3b8; }
+.field { margin-bottom: 20px; }
+label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; color: #475569; }
 
 input {
-    width: 100%;
-    padding: 12px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    color: white;
+    width: 100%; border: 1px solid #cbd5e1;
+    padding: 12px; font-size: 14px; outline: none; transition: 0.2s;
     box-sizing: border-box;
-    transition: all 0.3s;
+    background: #fff;
+}
+input:focus { border-color: var(--dark); ring: 2px solid var(--dark); }
+
+#strength-meter { height: 3px; width: 100%; background: #f1f5f9; margin-top: 8px; }
+#strength-bar { height: 100%; width: 0; transition: 0.4s; background: var(--error); }
+
+.label-group { display: flex; justify-content: space-between; align-items: center; }
+#entropy-label { font-size: 9px; text-transform: uppercase; color: #94a3b8; }
+
+.policy-list { list-style: none; padding: 0; font-size: 10px; color: #94a3b8; margin-top: 10px; }
+.policy-list li.valid { color: var(--accent); font-weight: 600; }
+
+.btn-primary {
+    width: 100%; background: var(--dark); color: white; border: none;
+    padding: 14px; cursor: pointer; font-size: 12px; font-weight: 700;
+    transition: 0.2s;
+}
+.btn-primary:hover { opacity: 0.9; }
+
+.hidden { display: none; }
+.otp-inputs { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
+.otp-digit { width: 40px; height: 50px; text-align: center; font-size: 18px; border: 1px solid #cbd5e1; }
+
+#system-logs {
+    margin-top: 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    background: #f1f5f9; padding: 10px; color: #64748b;
+    max-height: 60px; overflow-y: auto; border-radius: 4px;
 }
 
-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(0, 255, 157, 0.2);
+#lockout-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: white; z-index: 1000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-
-.password-wrapper { position: relative; }
-.eye-btn {
-    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer; color: #6272a4;
-}
-
-
-.strength-meter {
-    height: 4px; background: #1e293b; margin-top: 8px; border-radius: 2px;
-}
-.bar { height: 100%; width: 0%; transition: all 0.4s; border-radius: 2px; }
-
-button[type="submit"] {
-    width: 100%;
-    padding: 14px;
-    background: var(--primary);
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 10px;
-}
-
-button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 255, 157, 0.4);
-}
-
-button:disabled { background: #334155; cursor: not-allowed; }
-
-#message { font-size: 13px; text-align: center; margin-top: 15px; min-height: 20px; }
-
-.footer-info {
-    background: #0f172a; padding: 10px; font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: #475569; text-align: center;
-}
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.timer { font-size: 40px; font-weight: 700; color: var(--error); margin-top: 10px; }
