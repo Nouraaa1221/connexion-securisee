@@ -1,10 +1,10 @@
 
 async function hashPassword(password) {
-    const encoder = new TextEncoder(); // encode le texte en tableau de bytes
-    const data = encoder.encode(password); // encode le mot de passe
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data); // calcule le hash
-    const hashArray = Array.from(new Uint8Array(hashBuffer)); // transforme en tableau de nombres
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convertit en chaîne hexadécimale
+    const encoder = new TextEncoder(); 
+    const data = encoder.encode(password); 
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); 
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); 
 }
 
 const form = document.getElementById("loginForm");
@@ -17,7 +17,7 @@ let blocked = false;
 
 
 form.addEventListener("submit", function (e) {
-    e.preventDefault(); // empêche le rechargement de la page
+    e.preventDefault(); 
 
     if (blocked) {
         message.style.color = "red";
@@ -26,7 +26,7 @@ form.addEventListener("submit", function (e) {
     }
 
     const password = document.getElementById("password").value;
-    attempts++; // compte toutes les tentatives
+    attempts++; 
 
 
     if (attempts > MAX_ATTEMPTS) {
@@ -54,7 +54,7 @@ form.addEventListener("submit", function (e) {
 
 
     hashPassword(password).then(hash => {
-        console.log("Hash du mot de passe :", hash); // affichage dans la console
+        console.log("Hash du mot de passe :", hash); 
         message.style.color = "green";
         message.textContent = "Connexion simulée réussie (mot de passe sécurisé)";
     });
