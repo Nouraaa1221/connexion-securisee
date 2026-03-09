@@ -5,6 +5,11 @@
     --error: #991b1b;
 }
 
+
+.hidden {
+    display: none !important;
+}
+
 body {
     margin: 0; padding: 0;
     background-color: #f8fafc;
@@ -35,7 +40,7 @@ input {
     box-sizing: border-box;
     background: #fff;
 }
-input:focus { border-color: var(--dark); ring: 2px solid var(--dark); }
+input:focus { border-color: var(--dark); }
 
 #strength-meter { height: 3px; width: 100%; background: #f1f5f9; margin-top: 8px; }
 #strength-bar { height: 100%; width: 0; transition: 0.4s; background: var(--error); }
@@ -44,23 +49,23 @@ input:focus { border-color: var(--dark); ring: 2px solid var(--dark); }
 #entropy-label { font-size: 9px; text-transform: uppercase; color: #94a3b8; }
 
 .policy-list { list-style: none; padding: 0; font-size: 10px; color: #94a3b8; margin-top: 10px; }
+.policy-list li { margin-bottom: 5px; }
 .policy-list li.valid { color: var(--accent); font-weight: 600; }
 
 .btn-primary {
     width: 100%; background: var(--dark); color: white; border: none;
     padding: 14px; cursor: pointer; font-size: 12px; font-weight: 700;
-    transition: 0.2s;
+    transition: 0.2s; margin-top: 10px;
 }
 .btn-primary:hover { opacity: 0.9; }
 
-.hidden { display: none; }
 .otp-inputs { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
 .otp-digit { width: 40px; height: 50px; text-align: center; font-size: 18px; border: 1px solid #cbd5e1; }
 
 #system-logs {
     margin-top: 30px; font-family: 'JetBrains Mono', monospace; font-size: 9px;
     background: #f1f5f9; padding: 10px; color: #64748b;
-    max-height: 60px; overflow-y: auto; border-radius: 4px;
+    max-height: 80px; overflow-y: auto; border-radius: 4px;
 }
 
 #lockout-screen {
