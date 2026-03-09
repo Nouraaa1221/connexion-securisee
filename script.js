@@ -9,8 +9,11 @@ const SecurityCore = (() => {
         if (/[0-9]/.test(password)) entropy += 25;
         if (/[^A-Za-z0-9]/.test(password)) entropy += 25;
         
-        document.getElementById('len').className = password.length >= 12 ? 'valid' : 'invalid';
-        document.getElementById('spec').className = (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) ? 'valid' : 'invalid';
+        const lenLi = document.getElementById('len');
+        const specLi = document.getElementById('spec');
+        
+        if(lenLi) lenLi.className = password.length >= 12 ? 'valid' : 'invalid';
+        if(specLi) specLi.className = (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) ? 'valid' : 'invalid';
         
         return entropy;
     };
@@ -24,20 +27,22 @@ const SecurityCore = (() => {
 
     const addLog = (msg) => {
         const log = document.getElementById('system-logs');
-        log.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>` + log.innerHTML;
+        if(log) log.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>` + log.innerHTML;
     };
 
     const triggerLockout = () => {
         const screen = document.getElementById('lockout-screen');
         const timerDisplay = document.getElementById('lockout-timer');
         let sec = 30;
-        screen.classList.remove('hidden');
+        
+        if(screen) screen.classList.remove('hidden');
+        
         const itv = setInterval(() => {
             sec--;
-            timerDisplay.textContent = `00:${sec.toString().padStart(2, '0')}`;
+            if(timerDisplay) timerDisplay.textContent = `00:${sec.toString().padStart(2, '0')}`;
             if (sec <= 0) {
                 clearInterval(itv);
-                screen.classList.add('hidden');
+                if(screen) screen.classList.add('hidden');
                 attempts = 0;
             }
         }, 1000);
@@ -47,39 +52,56 @@ const SecurityCore = (() => {
         init: () => {
             const passInput = document.getElementById('password');
             const bar = document.getElementById('strength-bar');
+            const form = document.getElementById('loginForm');
 
-            passInput.addEventListener('input', (e) => {
-                const score = checkStrength(e.target.value);
-                bar.style.width = score + "%";
-                bar.style.backgroundColor = score < 50 ? "#991b1b" : (score < 100 ? "#b45309" : "#166534");
-            });
+            if(passInput) {
+                passInput.addEventListener('input', (e) => {
+                    const score = checkStrength(e.target.value);
+                    if(bar) {
+                        bar.style.width = score + "%";
+                        bar.style.backgroundColor = score < 50 ? "#991b1b" : (score < 100 ? "#b45309" : "#166534");
+                    }
+                });
+            }
 
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (checkStrength(passInput.value) < 75) {
-                    addLog("ÉCHEC : Politique de sécurité non satisfaite");
-                    return;
-                }
-                attempts++;
-                if (attempts >= maxAttempts) {
-                    triggerLockout();
-                    return;
-                }
-                const h = await hashData(passInput.value);
-                addLog(`CHIFFREMENT RÉUSSI : ${h.substring(0, 16)}...`);
-                document.getElementById('step-1').classList.add('hidden');
-                document.getElementById('step-2').classList.remove('hidden');
-            });
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (checkStrength(passInput.value) < 75) {
+                        addLog("ÉCHEC : Politique de sécurité insuffisante");
+                        return;
+                    }
+                    
+                    attempts++;
+                    if (attempts >= maxAttempts) {
+                        triggerLockout();
+                        addLog("ALERTE : Verrouillage système activé");
+                        return;
+                    }
+                    
+                    const h = await hashData(passInput.value);
+                    addLog(`CHIFFREMENT RÉUSSI : ${h.substring(0, 16)}...`);
+                    
+                    document.getElementById('step-1').classList.add('hidden');
+                    document.getElementById('step-2').classList.remove('hidden');
+                });
+            }
 
-            document.getElementById('verifyMFA').addEventListener('click', () => {
-                addLog("VALIDATION MFA EN COURS...");
-                setTimeout(() => {
-                    alert("ACCÈS AUTORISÉ");
-                    location.reload();
-                }, 1000);
-            });
+            const verifyBtn = document.getElementById('verifyMFA');
+            if(verifyBtn) {
+                verifyBtn.addEventListener('click', () => {
+                    addLog("VALIDATION MFA EN COURS...");
+                    setTimeout(() => {
+                        alert("ACCÈS RÉSEAU AUTORISÉ");
+                        location.reload();
+                    }, 1000);
+                });
+            }
         }
     };
 })();
 
-SecurityCore.init();
+
+document.addEventListener('DOMContentLoaded', () => {
+    SecurityCore.init();
+});
