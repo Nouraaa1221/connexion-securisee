@@ -56,10 +56,26 @@
                     <input type="password" id="inputPass" placeholder="••••••••••••" oninput="onPassInput(this.value)">
                 </div>
                 <div class="field-error" id="errPass"></div>
-                <div class="strength-wrap" id="strengthWrap">
-                    <div class="strength-bars"><div class="bar" id="b0"></div><div class="bar" id="b1"></div><div class="bar" id="b2"></div><div class="bar" id="b3"></div></div>
-                    <div class="strength-label"><span>Sécurité du mot de passe</span><span id="strTxt">—</span></div>
-                </div>
+                <div class="strength-wrap" id="strengthWrap" style="display: none;">
+    <div class="strength-bars">
+        <div class="bar" id="b0"></div>
+        <div class="bar" id="b1"></div>
+        <div class="bar" id="b2"></div>
+        <div class="bar" id="b3"></div>
+    </div>
+    
+    <div class="strength-label">
+        <span>Sécurité du mot de passe</span>
+        <span id="strTxt">—</span>
+    </div>
+
+    <div class="criteria" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px;">
+        <div id="c0" style="font-size: 11px; color: #8a8680;">• 8+ caractères</div>
+        <div id="c1" style="font-size: 11px; color: #8a8680;">• Maj + min</div>
+        <div id="c2" style="font-size: 11px; color: #8a8680;">• Chiffre</div>
+        <div id="c3" style="font-size: 11px; color: #8a8680;">• Symbole</div>
+    </div>
+</div>
             </div>
             <button class="btn" id="btnLogin" onclick="handleLogin()">Se connecter</button>
         </div>
